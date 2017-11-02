@@ -207,7 +207,21 @@ function senseColor() {
 	
 	context.fillStyle = "orange";
 	context.fillRect(x0, y0, x1, y1);
-    alert(imageData.data[0] + " " + imageData.data[1] + " " + imageData.data[2]);
+    //alert(imageData.data[0] + " " + imageData.data[1] + " " + imageData.data[2]);
+	
+	
+	function gaussNoise(sigma=1) {
+      const x0 = 1.0 - Math.random();
+      const x1 = 1.0 - Math.random();
+      return sigma * Math.sqrt(-2 * Math.log(x0)) * Math.cos(2 * Math.PI * x1);
+    };
+	
+	
+    RED = imageData.data[0] + gaussNoise(3);
+	BLUE = imageData.data[1] + gaussNoise(3);
+	GREEN = imageData.data[0] + gaussNoise(3);
+	
+	
 	
 }	
 
