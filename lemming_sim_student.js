@@ -45,7 +45,7 @@ RobotInfo = [
    ]
   }
 ];
-
+// Bonjour
 // Simulation settings; please change anything that you think makes sense.
 simInfo = {
   maxSteps: 50000,  // maximal number of simulation steps to run
