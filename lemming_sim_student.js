@@ -37,7 +37,11 @@ RobotInfo = [
      // define another sensor
      {sense: senseDistance, minVal: 0, maxVal: 50, attachAngle: -Math.PI/4,
       lookAngle: 0, id: 'distL', color: [0, 150, 0], parent: null, value: null
-     }
+     },
+	 {
+	  sense: senseColor, minVal: 0, maxVal: 50, attachAngle: -Math.PI/4,
+      lookAngle: 0, id: 'distL', color: [0, 150, 0], parent: null, value: null	 
+	 }
    ]
   }
 ];
@@ -174,6 +178,38 @@ function drive(robot, force=0) {
         move_vec = Matter.Vector.rotate(force_vec, orientation);
   Matter.Body.applyForce(robot.body, robot.body.position , move_vec);
 };
+
+function senseColor() {
+	/*
+		Cast a 3x3 square in front of the sensor
+	    and get the mean RGB value with some random Gaussian noise
+	*/
+	
+	const context = document.getElementById('arenaLemming').getContext('2d');
+	var bodies = Matter.Composite.allBodies(simInfo.engine.world);
+
+	const robotAngle = this.parent.body.angle;
+
+	const rPos = this.parent.body.position;
+	const rSize = simInfo.robotSize;
+	
+	sensArea = 8
+	
+	x0 = rPos.x + sensArea/2 + (rSize) * Math.cos(robotAngle)
+	y0 = rPos.y + sensArea/2 +(rSize) * Math.sin(robotAngle)
+	x1 = sensArea
+	y1 = sensArea
+	
+	
+	
+				  
+    var imageData = context.getImageData(x0, y0, x1, y1);
+	
+	context.fillStyle = "orange";
+	context.fillRect(x0, y0, x1, y1);
+    alert(imageData.data[0] + " " + imageData.data[1] + " " + imageData.data[2]);
+	
+}	
 
 
 function senseDistance() {
