@@ -87,6 +87,16 @@ function init() {  // called once when loading HTML file
   simInfo.world.gravity.y = simInfo.gravity;
   simInfo.engine.timing.timeScale = 1;
 
+        var render = Matter.Render.create({
+        element: document.body,
+        engine: simInfo.engine,
+        options: {
+            width: width,
+            height: height,
+            wireframes: false
+        }
+    });
+    
   /* Create walls and boxes, and add them to the world. */
   // note that "roles" are custom properties for rendering (not from MatterJS)
   function getWall(x, y, width, height) {
@@ -102,22 +112,31 @@ function init() {  // called once when loading HTML file
 
   /* Add a bunch of boxes in a neat grid. */
   function getBox(x, y) {
+    
+    
+  
     // flip coin for red vs blue and add rgb
     colFlag = Math.round(Math.random());  // random 0,1 variable for box color
-    if (colFlag == 1 ){
+    if (((x == 100 || x == 220 || x ==340) && (y==100 || y == 200 || y == 300)) || ((x==160 || x == 280) && (y==150 || y ==250))){
       color = [0, 0, 200];
+        fill = '#0000FF'
     }
     else {
       color = [200, 0, 0];
+        fill = '#f42'
     }
+    
+    
     box = Matter.Bodies.rectangle(x, y, simInfo.boxSize, simInfo.boxSize,
-                                  {frictionAir: simInfo.airDrag,
+                                  {render: {fillStyle: fill},
+                                   frictionAir: simInfo.airDrag,
                                    friction: simInfo.boxFric,
                                    mass: simInfo.boxMass,
                                    role: 'box',
-                                   color: color});
+                                   color: color});        
     return box;
   };
+
 
   const startX = 100, startY = 100,
         nBoxX = 5, nBoxY = 5,
@@ -126,7 +145,8 @@ function init() {  // called once when loading HTML file
                                         nBoxX, nBoxY,
                                         gapX, gapY, getBox);
   Matter.World.add(simInfo.world, stack);
-
+  Matter.Engine.run(simInfo.engine);
+  Matter.Render.run(render);
   /* Add debugging mouse control for dragging objects. */
   if (simInfo.debugMouse){
     const mouseConstraint = Matter.MouseConstraint.create(simInfo.engine,
