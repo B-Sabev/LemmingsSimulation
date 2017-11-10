@@ -39,8 +39,8 @@ RobotInfo = [
       lookAngle: 0, id: 'distL', color: [0, 150, 0], parent: null, value: null
      },
 	 {
-	  sense: senseColor, minVal: 0, maxVal: 50, attachAngle: -Math.PI/4,
-      lookAngle: 0, id: 'distL', color: [0, 150, 0], parent: null, value: null	 
+	  sense: senseColor, minVal: 0, maxVal: 10, attachAngle: 0,
+      lookAngle: 0, id: 'color', color: [0, 150, 0], parent: null, value: [-1, -1, -1]	 
 	 }
    ]
   }
@@ -180,46 +180,118 @@ function drive(robot, force=0) {
 };
 
 function senseColor() {
-	/*
-		Cast a 3x3 square in front of the sensor
-	    and get the mean RGB value with some random Gaussian noise
-	*/
-	
-	const context = document.getElementById('arenaLemming').getContext('2d');
-	var bodies = Matter.Composite.allBodies(simInfo.engine.world);
+	  /* Distance sensor simulation based on ray casting. Called from sensor
+   * object, returns nothing, updates a new reading into this.value.
+   *
+   * Idea: Cast a ray with a certain length from the sensor, and check
+   *       via collision detection if objects intersect with the ray.
+   *       To determine distance, run a Binary search on ray length.
+   * Note: Sensor ray needs to ignore robot (parts), or start outside of it.
+   *       The latter is easy with the current circular shape of the robots.
+   * Note: Order of tests are optimized by starting with max ray length, and
+   *       then only testing the maximal number of initially resulting objects.
+   * Note: The sensor's "ray" could have any other (convex) shape;
+   *       currently it's just a very thin rectangle.
+   */
 
-	const robotAngle = this.parent.body.angle;
+  const context = document.getElementById('arenaLemming').getContext('2d');
+  var bodies = Matter.Composite.allBodies(simInfo.engine.world);
 
-	const rPos = this.parent.body.position;
-	const rSize = simInfo.robotSize;
-	
-	sensArea = 8
-	
-	x0 = rPos.x + sensArea/2 + (rSize) * Math.cos(robotAngle)
-	y0 = rPos.y + sensArea/2 +(rSize) * Math.sin(robotAngle)
-	x1 = sensArea
-	y1 = sensArea
-	
-	
-	
-				  
-    var imageData = context.getImageData(x0, y0, x1, y1);
-	
-	context.fillStyle = "orange";
-	context.fillRect(x0, y0, x1, y1);
-    //alert(imageData.data[0] + " " + imageData.data[1] + " " + imageData.data[2]);
-	
-	
-	function gaussNoise(sigma=1) {
+  const robotAngle = this.parent.body.angle,
+        attachAngle = this.attachAngle,
+        rayAngle = robotAngle + attachAngle + this.lookAngle;
+
+  const rPos = this.parent.body.position,
+        rSize = simInfo.robotSize,
+        startPoint = {x: rPos.x + (rSize+1) * Math.cos(robotAngle + attachAngle),
+                      y: rPos.y + (rSize+1) * Math.sin(robotAngle + attachAngle)};
+
+  function getEndpoint(rayLength) {
+    return {x: rPos.x + (rSize + rayLength) * Math.cos(rayAngle),
+            y: rPos.y + (rSize + rayLength) * Math.sin(rayAngle)};
+  };
+
+  function sensorRay(bodies, rayLength) {
+    // Cast ray of supplied length and return the bodies that collide with it.
+    const rayWidth = 1e-100,
+          endPoint = getEndpoint(rayLength);
+    rayX = (endPoint.x + startPoint.x) / 2,
+    rayY = (endPoint.y + startPoint.y) / 2,
+    rayRect = Matter.Bodies.rectangle(rayX, rayY, rayLength, rayWidth,
+                                      {isSensor: true, isStatic: true,
+                                       angle: rayAngle, role: 'sensor'});
+
+    var collidedBodies = [];
+    for (var bb = 0; bb < bodies.length; bb++) {
+      var body = bodies[bb];
+      // coarse check on body boundaries, to increase performance:
+      if (Matter.Bounds.overlaps(body.bounds, rayRect.bounds)) {
+        for (var pp = body.parts.length === 1 ? 0 : 1; pp < body.parts.length; pp++) {
+          var part = body.parts[pp];
+          // finer, more costly check on actual geometry:
+          if (Matter.Bounds.overlaps(part.bounds, rayRect.bounds)) {
+            const collision = Matter.SAT.collides(part, rayRect);
+            if (collision.collided) {
+              collidedBodies.push(body);
+              break;
+            }
+          }
+        }
+      }
+    }
+    return collidedBodies;
+  };
+
+  // Check bodies hit with the max array length
+  var rayLength = this.maxVal;
+  var colorDetected = []
+  bodies = sensorRay(bodies, rayLength);
+  // if some collided, search for maximal ray length without collisions
+  if (bodies.length > 0) {
+	  
+	 
+	 
+	 this.value = [bodies[0].color[0],
+					  bodies[0].color[1],
+					  bodies[0].color[2]]
+    
+  }
+
+  if (simInfo.debugSensors) {  // if invisible, check order of object drawing
+    // draw the resulting ray
+    endPoint = getEndpoint(rayLength);
+    context.beginPath();
+    context.moveTo(startPoint.x, startPoint.y);
+    context.lineTo(endPoint.x, endPoint.y);
+    context.strokeStyle = this.parent.info.color;
+    context.lineWidth = 0.5;
+    context.stroke();
+    // mark all objects's lines intersecting with the ray
+    for (var bb = 0; bb < bodies.length; bb++) {
+      var vertices = bodies[bb].vertices;
+      context.moveTo(vertices[0].x, vertices[0].y);
+      for (var vv = 1; vv < vertices.length; vv += 1) {
+        context.lineTo(vertices[vv].x, vertices[vv].y);
+      }
+      context.closePath();
+    }
+    context.stroke();
+  }
+
+  // indicate if the sensor exceeded its maximum length by returning infinity
+  if (rayLength > this.maxVal) {
+    rayLength = Infinity;
+  }
+  else {
+    // apply mild noise on the sensor reading, and clamp between valid values
+    function gaussNoise(sigma=1) {
       const x0 = 1.0 - Math.random();
       const x1 = 1.0 - Math.random();
       return sigma * Math.sqrt(-2 * Math.log(x0)) * Math.cos(2 * Math.PI * x1);
     };
-	
-	
-    RED = imageData.data[0] + gaussNoise(3);
-	BLUE = imageData.data[1] + gaussNoise(3);
-	GREEN = imageData.data[0] + gaussNoise(3);
+    colorDetected = Math.floor(colorDetected + gaussNoise(3));
+    
+  }
 	
 	
 	
@@ -470,7 +542,8 @@ function getSensorValById(robot, id) {
 function robotMove(robot) {
   // TODO: Define Lemming program here.
   const distL = getSensorValById(robot, 'distL'),
-        distR = getSensorValById(robot, 'distR');
+        distR = getSensorValById(robot, 'distR'),
+		color = getSensorValById(robot, 'color');
 
   robot.rotate(robot, +0.005);
   robot.drive(robot, 0.0005);
