@@ -244,14 +244,11 @@ function senseColor() {
 
   // Check bodies hit with the max array length
   var rayLength = this.maxVal;
-  var colorDetected = []
+  var colorDetected = [68, 68, 68]
   bodies = sensorRay(bodies, rayLength);
   // if some collided, search for maximal ray length without collisions
   if (bodies.length > 0) {
-	  
-	 
-	 
-	 this.value = [bodies[0].color[0],
+	 colorDetected = [bodies[0].color[0],
 					  bodies[0].color[1],
 					  bodies[0].color[2]]
     
@@ -289,12 +286,17 @@ function senseColor() {
       const x1 = 1.0 - Math.random();
       return sigma * Math.sqrt(-2 * Math.log(x0)) * Math.cos(2 * Math.PI * x1);
     };
-    colorDetected = Math.floor(colorDetected + gaussNoise(3));
+	for(i = 0; i < colorDetected.length; i++){
+		colorDetected[i] = Math.floor(colorDetected[i] + gaussNoise(20));
+	}
     
   }
 	
 	
-	
+	for(i=0; i < colorDetected.length;i++){
+		this.value[i] = colorDetected[i]
+	}
+	//alert("Color detected " + this.value)
 }	
 
 
@@ -544,7 +546,20 @@ function robotMove(robot) {
   const distL = getSensorValById(robot, 'distL'),
         distR = getSensorValById(robot, 'distR'),
 		color = getSensorValById(robot, 'color');
-
+  
+  RB_diff = color[0] - color[2]
+  // if red box, then RB_diff in 0.999 of the cases will be > 200 - 4 * noise_standard_deviations
+  // if blue box, then RB_diff in 0.999 of the cases will be < -200 + 4 * noise_sd
+  // in between - wall or nothing
+  var objColor = 'gray'
+  if(RB_diff > 120){
+	objColor = 'red'  
+  }	  
+  if(RB_diff < -120){
+	objColor = 'blue'  
+  }
+  //alert(objColor)
+  
   robot.rotate(robot, +0.005);
   robot.drive(robot, 0.0005);
 };
