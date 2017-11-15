@@ -27,7 +27,7 @@ RobotInfo = [
      {sense: senseDistance,  // function handle, determines type of sensor
       minVal: 0,  // minimum detectable distance, in pixels
       maxVal: 50,  // maximum detectable distance, in pixels
-      attachAngle: Math.PI/4,  // where the sensor is mounted on robot body
+      attachAngle: Math.PI/2.1,  // where the sensor is mounted on robot body
       lookAngle: 0,  // direction the sensor is looking (relative to center-out)
       id: 'distR',  // a unique, arbitrary ID of the sensor, for printing/debugging
       color: [150, 0, 0],  // sensor color [in RGB], to distinguish them
@@ -35,8 +35,8 @@ RobotInfo = [
       value: null  // sensor value, i.e. distance in pixels; updated by sense() function
      },
      // define another sensor
-     {sense: senseDistance, minVal: 0, maxVal: 50, attachAngle: -Math.PI/4,
-      lookAngle: 0, id: 'distL', color: [0, 150, 0], parent: null, value: null
+     {sense: senseDistance, minVal: 0, maxVal: 50, attachAngle: -Math.PI/2.1,
+      lookAngle: 1, id: 'distL', color: [0, 150, 0], parent: null, value: null
      },
 	 {sense: senseDistance, minVal: 0, maxVal: 15, attachAngle: 0,
       lookAngle: 0, id: 'distC', color: [0, 150, 0], parent: null, value: null
@@ -56,7 +56,7 @@ simInfo = {
   boxFric: 0.005, // friction between boxes during collisions
   boxMass: 0.01,  // mass of boxes
   boxSize: 20,  // size of the boxes, in pixels
-  robotSize: 13,  // approximate robot radius, in pixels (note the SVG gets scaled down)
+  robotSize: 18,  // approximate robot radius, in pixels (note the SVG gets scaled down)
   robotMass: 0.4, // robot mass (a.u)
   gravity: 0,  // constant acceleration in Y-direction
   bayRobot: null,  // currently selected robot
