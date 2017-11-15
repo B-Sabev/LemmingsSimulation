@@ -25,17 +25,17 @@ RobotInfo = [
    sensors: [  // define an array of sensors on the robot
      // define one sensor
      {sense: senseDistance,  // function handle, determines type of sensor
-      minVal: 0,  // minimum detectable distance, in pixels
-      maxVal: 50,  // maximum detectable distance, in pixels
+      minVal: -10,  // minimum detectable distance, in pixels
+      maxVal: 100,  // maximum detectable distance, in pixels
       attachAngle: Math.PI/2.1,  // where the sensor is mounted on robot body
-      lookAngle: 0,  // direction the sensor is looking (relative to center-out)
+      lookAngle: 180,  // direction the sensor is looking (relative to center-out)
       id: 'distR',  // a unique, arbitrary ID of the sensor, for printing/debugging
       color: [150, 0, 0],  // sensor color [in RGB], to distinguish them
       parent: null,  // robot object the sensor is attached to, added by InstantiateRobot
       value: null  // sensor value, i.e. distance in pixels; updated by sense() function
      },
      // define another sensor
-     {sense: senseDistance, minVal: 0, maxVal: 50, attachAngle: -Math.PI/2.1,
+     {sense: senseDistance, minVal: -10, maxVal: 100, attachAngle: -Math.PI/2.1,
       lookAngle: 1, id: 'distL', color: [0, 150, 0], parent: null, value: null
      },
 	 {sense: senseDistance, minVal: 0, maxVal: 15, attachAngle: 0,
@@ -368,7 +368,7 @@ function senseDistance() {
 
   // call 1x with full length, and check all bodies in the world;
   // in subsequent calls, only check the bodies resulting here
-  var rayLength = this.maxVal;
+    var rayLength = this.maxVal;
   bodies = sensorRay(bodies, rayLength);
   // if some collided, search for maximal ray length without collisions
   if (bodies.length > 0) {
@@ -458,7 +458,6 @@ function loadBay(robot) {
                    y: robotBay.height/2},
         rSize = simInfo.robotSize,
         bScale = simInfo.bayScale;
-
   for (var ss = 0; ss < robot.info.sensors.length; ++ss) {
     const curSensor = robot.sensors[ss],
           attachAngle = curSensor.attachAngle;
@@ -525,7 +524,7 @@ function InstantiateRobot(robotInfo) {
   // add functions getWidth/getHeight for graphics.js & mouse.js,
   // to enable selection by clicking the robot in the arena
   this.getWidth = function() { return 2 * simInfo.robotSize; };
-  this.getHeight = function() { return 2 * simInfo.robotSize; };
+  this.getHeight = function() { return 3 * simInfo.robotSize; };
 }
 
 function robotUpdateSensors(robot) {
@@ -556,9 +555,9 @@ function robotMove(robot) {
 
   var blueBlock      = color[0] - color[2] < -120
   var redBlock		 = color[0] - color[2] > 120
-  var blockInGripper = distC < 5 && (blueBlock || redBlock)
+  var blockInGripper = distC < 6 || (blueBlock || redBlock)
   var blockAhead     = distC >= 5 && distC < 10 && (blueBlock || redBlock)
-  var Wall 			 = distL < 15 || distR < 15
+  var Wall 			 = distL < 15 && distR < 15
   
   //alert(blockAhead)
   //alert(blockInGripper + " " + blueBlock + " " + redBlock + " " + blockAhead)
@@ -575,7 +574,8 @@ function robotMove(robot) {
 		
 	  } else if(redBlock){
 		console.log("Red block in gripper")
-		robot.rotate(robot, -0.005);
+        robot.drive(robot,-0.005)
+		robot.rotate(robot, -0.300);
 		robot.drive(robot, 0.0005);     
 	  }
 	  
@@ -583,11 +583,12 @@ function robotMove(robot) {
 	  
 	  if(!blockInGripper){
 		console.log("Near wall, no block")  
-		robot.rotate(robot, +0.02); 
+		robot.rotate(robot, +0.2);
 		
 	  } else if(blueBlock){
-		console.log("Near wall, blueBlock") 
-		robot.rotate(robot, -0.005);
+		console.log("Near wall, blueBlock")
+        robot.drive(robot, -0.005);
+		robot.rotate(robot, -0.010);
 		robot.drive(robot, 0.0005);  
 		
 	  } else if(redBlock){
@@ -598,7 +599,7 @@ function robotMove(robot) {
   
   } else {
 	console.log("Default")
-	robot.rotate(robot, +0.005);
+	robot.rotate(robot, +0.003);
 	robot.drive(robot, 0.0005);  
 	  
   }
