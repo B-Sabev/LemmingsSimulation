@@ -64,7 +64,7 @@ simInfo = {
   bayScale: 3,  // scale within 2nd, inset canvas showing robot in it's "bay"
   doContinue: true,  // whether to continue simulation, set in HTML
   debugSensors: false,  // plot sensor rays and mark detected objects
-  debugMouse: false,  // allow dragging any object with the mouse
+  debugMouse: true,  // allow dragging any object with the mouse
   engine: null,  // MatterJS 2D physics engine
   world: null,  // world object (composite of all objects in MatterJS engine)
   runner: null,  // object for running MatterJS engine
