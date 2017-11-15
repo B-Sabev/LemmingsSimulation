@@ -38,8 +38,11 @@ RobotInfo = [
      {sense: senseDistance, minVal: 0, maxVal: 50, attachAngle: -Math.PI/4,
       lookAngle: 0, id: 'distL', color: [0, 150, 0], parent: null, value: null
      },
+	 {sense: senseDistance, minVal: 0, maxVal: 15, attachAngle: 0,
+      lookAngle: 0, id: 'distC', color: [0, 150, 0], parent: null, value: null
+     },
 	 {
-	  sense: senseColor, minVal: 0, maxVal: 10, attachAngle: 0,
+	  sense: senseColor, minVal: 0, maxVal: 15, attachAngle: 0,
       lookAngle: 0, id: 'color', color: [0, 150, 0], parent: null, value: [-1, -1, -1]	 
 	 }
    ]
@@ -545,23 +548,63 @@ function robotMove(robot) {
   // TODO: Define Lemming program here.
   const distL = getSensorValById(robot, 'distL'),
         distR = getSensorValById(robot, 'distR'),
-		color = getSensorValById(robot, 'color');
-  
-  RB_diff = color[0] - color[2]
+		color = getSensorValById(robot, 'color'),
+		distC = getSensorValById(robot, 'distC');
   // if red box, then RB_diff in 0.999 of the cases will be > 200 - 4 * noise_standard_deviations
   // if blue box, then RB_diff in 0.999 of the cases will be < -200 + 4 * noise_sd
   // in between - wall or nothing
-  var objColor = 'gray'
-  if(RB_diff > 120){
-	objColor = 'red'  
-  }	  
-  if(RB_diff < -120){
-	objColor = 'blue'  
-  }
-  //alert(objColor)
+
+  var blueBlock      = color[0] - color[2] < -120
+  var redBlock		 = color[0] - color[2] > 120
+  var blockInGripper = distC < 5 && (blueBlock || redBlock)
+  var blockAhead     = distC >= 5 && distC < 10 && (blueBlock || redBlock)
+  var Wall 			 = distL < 15 || distR < 15
   
-  robot.rotate(robot, +0.005);
-  robot.drive(robot, 0.0005);
+  //alert(blockAhead)
+  //alert(blockInGripper + " " + blueBlock + " " + redBlock + " " + blockAhead)
+  if((blockAhead || blockInGripper) && !Wall){
+	  
+	  if(!blockInGripper){
+		  console.log("Block ahead")
+		robot.drive(robot, 0.0005); 
+		
+	  } else if(blueBlock){
+		console.log("Blue block in gripper")
+		robot.rotate(robot, +0.005);
+		robot.drive(robot, 0.0005); 
+		
+	  } else if(redBlock){
+		console.log("Red block in gripper")
+		robot.rotate(robot, -0.005);
+		robot.drive(robot, 0.0005);     
+	  }
+	  
+  } else if (Wall) {
+	  
+	  if(!blockInGripper){
+		console.log("Near wall, no block")  
+		robot.rotate(robot, +0.02); 
+		
+	  } else if(blueBlock){
+		console.log("Near wall, blueBlock") 
+		robot.rotate(robot, -0.005);
+		robot.drive(robot, 0.0005);  
+		
+	  } else if(redBlock){
+		console.log("Near wall, redBlock") 
+		robot.rotate(robot, +0.005);
+		robot.drive(robot, 0.0005);     
+	  }
+  
+  } else {
+	console.log("Default")
+	robot.rotate(robot, +0.005);
+	robot.drive(robot, 0.0005);  
+	  
+  }
+  //alert(objColor + " " + distC + " " + distL + " " + distR)
+  
+  
 };
 
 function plotSensor(context, x = this.x, y = this.y) {
