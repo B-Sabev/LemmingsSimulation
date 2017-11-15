@@ -575,7 +575,7 @@ function robotMove(robot) {
 	  } else if(redBlock){
 		console.log("Red block in gripper")
         robot.drive(robot,-0.005)
-		robot.rotate(robot, -0.300);
+		robot.rotate(robot, -0.030);
 		robot.drive(robot, 0.0005);     
 	  }
 	  
