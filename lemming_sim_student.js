@@ -27,7 +27,7 @@ RobotInfo = [
      {sense: senseDistance,  // function handle, determines type of sensor
       minVal: 0,  // minimum detectable distance, in pixels
       maxVal: 50,  // maximum detectable distance, in pixels
-      attachAngle: Math.PI/30,  // sensor's angle on robot body
+      attachAngle: 0,//Math.PI/30,  // sensor's angle on robot body
       attachRadius: 14, // sensor's distance from robot body center
       lookAngle: 0,  // direction the sensor is looking (relative to center-out)
       id: 'dist_all',  // a unique, arbitrary ID of the sensor, for printing/debugging
@@ -37,7 +37,7 @@ RobotInfo = [
       valueStr: ''  // sensor value for printing on screen/writing to HTML
      },
      // define distance sensor that doesn't see boxes (e.g. because it's "elevated")
-     {sense: senseDistance_noBox, minVal: 0, maxVal: 50, attachAngle: -Math.PI/30,
+     {sense: senseDistance_noBox, minVal: 0, maxVal: 50, attachAngle: 0,//-Math.PI/30,
       attachRadius: 14, lookAngle: 0, id: 'dist_noBox', color: [100, 100, 100, 50],
       parent: null, value: null, valueStr: ''
      },
@@ -670,12 +670,16 @@ function robotMove(robot) {
 
   var blueBlock      = color[0] - color[2] < -120
   var redBlock		 = color[0] - color[2] > 120
-  var blockInGripper = dist_all < 6 || (blueBlock || redBlock)
+  var blockInGripper = dist_all < 6 && (blueBlock || redBlock)
   var blockAhead     = dist_all >= 5 && dist_all < 15 && (blueBlock || redBlock)
   var Wall 			 = dist_noBox < 15
   
   //alert(dist_all + " " + dist_noBox + " " + color)
   //alert(blockInGripper + " " + blueBlock + " " + redBlock + " " + blockAhead)
+  
+  
+  
+  // Should we remove !WALL ????
   if((blockAhead || blockInGripper) && !Wall){
 	  
 	  if(!blockInGripper){
@@ -689,7 +693,7 @@ function robotMove(robot) {
 		
 	  } else if(redBlock){
 		console.log("Red block in gripper")
-        robot.drive(robot,-0.005)
+        //robot.drive(robot,-0.005)
 		robot.rotate(robot, -0.030);
 		robot.drive(robot, 0.0005);     
 	  }
@@ -702,7 +706,7 @@ function robotMove(robot) {
 		
 	  } else if(blueBlock){
 		console.log("Near wall, blueBlock")
-        robot.drive(robot, -0.005);
+        //robot.drive(robot, -0.005);
 		robot.rotate(robot, -0.010);
 		robot.drive(robot, 0.0005);  
 		
@@ -714,7 +718,7 @@ function robotMove(robot) {
   
   } else {
 	console.log("Default")
-	robot.rotate(robot, +0.003);
+	robot.rotate(robot, +0.005);
 	robot.drive(robot, 0.0005);  
 	  
   }
