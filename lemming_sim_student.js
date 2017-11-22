@@ -557,13 +557,13 @@ function robotMove(robot) {
 		distC = getSensorValById(robot, 'distC');
   // if red box, then RB_diff in 0.999 of the cases will be > 200 - 4 * noise_standard_deviations
   // if blue box, then RB_diff in 0.999 of the cases will be < -200 + 4 * noise_sd
-  // in between - wall or nothing
+  // in between - wall or nothing  
 
-  var blueBlock      = color[0] - color[2] < -120
-  var redBlock		 = color[0] - color[2] > 120
+  var blueBlock      = distC[1] - distC[3] < -120
+  var redBlock		 = distC[1] - distC[3] > 120
   var blockInGripper = distC < 6 || (blueBlock || redBlock)
   var blockAhead     = distC >= 5 && distC < 10 && (blueBlock || redBlock)
-  var Wall 			 = distL < 15 && distR < 15
+  var Wall 			 = distL < 15 && distR < 15 && (
   
   alert(distL + " " + distR + " " + distC)
   //alert(blockInGripper + " " + blueBlock + " " + redBlock + " " + blockAhead)
