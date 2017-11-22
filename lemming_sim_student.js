@@ -306,7 +306,7 @@ function senseColor() {
 	
 	
 	for(i=0; i < colorDetected.length;i++){
-		this.value[i] = colorDetected[i]
+		this.value[i] = [colorDetected[i],rayLength]
 	}
 	
 }	
