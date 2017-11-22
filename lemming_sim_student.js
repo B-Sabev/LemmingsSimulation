@@ -369,9 +369,16 @@ function senseDistance() {
   // call 1x with full length, and check all bodies in the world;
   // in subsequent calls, only check the bodies resulting here
     var rayLength = this.maxVal;
+	var colorDetected = [-1, -1, -1];
   bodies = sensorRay(bodies, rayLength);
   // if some collided, search for maximal ray length without collisions
   if (bodies.length > 0) {
+	colorDetected = [bodies[0].color[0],
+					  bodies[0].color[1],
+					  bodies[0].color[2]];  
+	  
+	  
+	  
     var lo = 0,
         hi = rayLength;
     while (lo < rayLength) {
@@ -424,7 +431,7 @@ function senseDistance() {
     rayLength = Matter.Common.clamp(rayLength, this.minVal, this.maxVal);
   }
 
-  this.value = rayLength;
+  this.value = [rayLength, colorDetected[0], colorDetected[1], colorDetected[2]];
 };
 
 function dragSensor(sensor, event) {
@@ -547,7 +554,6 @@ function robotMove(robot) {
   // TODO: Define Lemming program here.
   const distL = getSensorValById(robot, 'distL'),
         distR = getSensorValById(robot, 'distR'),
-		color = getSensorValById(robot, 'color'),
 		distC = getSensorValById(robot, 'distC');
   // if red box, then RB_diff in 0.999 of the cases will be > 200 - 4 * noise_standard_deviations
   // if blue box, then RB_diff in 0.999 of the cases will be < -200 + 4 * noise_sd
@@ -559,7 +565,7 @@ function robotMove(robot) {
   var blockAhead     = distC >= 5 && distC < 10 && (blueBlock || redBlock)
   var Wall 			 = distL < 15 && distR < 15
   
-  //alert(blockAhead)
+  alert(distL + " " + distR + " " + distC)
   //alert(blockInGripper + " " + blueBlock + " " + redBlock + " " + blockAhead)
   if((blockAhead || blockInGripper) && !Wall){
 	  
