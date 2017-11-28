@@ -26,9 +26,9 @@ RobotInfo = [
      // define one sensor
      {sense: senseDistance,  // function handle, determines type of sensor
       minVal: 0,  // minimum detectable distance, in pixels
-      maxVal: 60,  // maximum detectable distance, in pixels
+      maxVal: 50,  // maximum detectable distance, in pixels
       attachAngle: 0,//Math.PI/30,  // sensor's angle on robot body
-      attachRadius: 10, // sensor's distance from robot body center
+      attachRadius: 14, // sensor's distance from robot body center
       lookAngle: 0,  // direction the sensor is looking (relative to center-out)
       id: 'dist_all',  // a unique, arbitrary ID of the sensor, for printing/debugging
       color: [0, 0, 0, 50],  // sensor color [in RGBA], to distinguish them
@@ -37,20 +37,16 @@ RobotInfo = [
       valueStr: ''  // sensor value for printing on screen/writing to HTML
      },
      // define distance sensor that doesn't see boxes (e.g. because it's "elevated")
-     {sense: senseDistance_noBox, minVal: 0, maxVal: 70, attachAngle: 0,//-Math.PI/30,
-      attachRadius: 10, lookAngle:  0, id: 'dist_noBox', color: [100, 100, 100, 50],
+     {sense: senseDistance_noBox, minVal: 0, maxVal: 50, attachAngle: 0,//-Math.PI/30,
+      attachRadius: 14, lookAngle: 0, id: 'dist_noBox', color: [100, 100, 100, 50],
       parent: null, value: null, valueStr: ''
      },
-     
 	 // define color sensor
 	 {
-	  sense: senseColor, minVal: 0, maxVal: 15, attachAngle: 0, attachRadius: 10,
-      lookAngle: 0.49, id: 'color', color: [0, 150, 0], parent: null, value: [-1, -1, -1]
+	  sense: senseColor, minVal: 0, maxVal: 15, attachAngle: 0, attachRadius: 14,
+      lookAngle: 0, id: 'color', color: [0, 150, 0], parent: null, value: [-1, -1, -1]	 
 	 },
-     {
-     sense: senseColor, minVal: 0, maxVal: 15, attachAngle: 0, attachRadius: 10,
-     lookAngle: -0.49, id: 'color2', color: [0, 150, 0], parent: null, value: [-1, -1, -1]
-     },
+	 
      // define a gyroscope/angle sensor
      {sense: senseRobotAngle, id: 'gyro', parent: null, value: null, valueStr: ''}
      // TODO: define a color sensor
@@ -215,13 +211,12 @@ function senseColor() {
 
   const robotAngle = this.parent.body.angle,
         attachAngle = this.attachAngle,
-        attachRadius = this.attachRadius,
         rayAngle = robotAngle + attachAngle + this.lookAngle;
 
   const rPos = this.parent.body.position,
         rSize = simInfo.robotSize,
-        startPoint = {x: rPos.x + attachRadius  * Math.cos(robotAngle + attachAngle),
-                      y: rPos.y + attachRadius  * Math.sin(robotAngle + attachAngle)};
+        startPoint = {x: rPos.x + (rSize+1) * Math.cos(robotAngle + attachAngle),
+                      y: rPos.y + (rSize+1) * Math.sin(robotAngle + attachAngle)};
 
   function getEndpoint(rayLength) {
     return {x: rPos.x + (rSize + rayLength) * Math.cos(rayAngle),
@@ -311,7 +306,7 @@ function senseColor() {
 	
 	
 	for(i=0; i < colorDetected.length;i++){
-		this.value[i] = colorDetected[i]
+		this.value[i] = [colorDetected[i],rayLength]
 	}
 	
 }	
@@ -669,70 +664,62 @@ function robotMove(robot) {
 
   const dist_all = getSensorValById(robot, 'dist_all'),
         dist_noBox = getSensorValById(robot, 'dist_noBox'),
-		color = getSensorValById(robot, 'color'),
-        color2 = getSensorValById(robot,'color2');
-    
+		color = getSensorValById(robot, 'color');
 		
  
 
-  var blueBlock      = color[0] - color[2] < -120 || color2[0] - color2[2] < -120
-  var redBlock		 = color[0] - color[2] > 120 || color2[0] - color2[2] > 120
-    
-    //prevent interference of both sensors, if the robot detects a red block, the red block gets priority
-    if (redBlock)
-        blueBlock=false
-  var blockInGripper = (blueBlock || redBlock) //&&(dist_all < 13 || dist_all_2 <13)
-  var blockAhead     = (dist_all >= 13 && dist_all < 17) && (blueBlock || redBlock)
-   if(redBlock)
-       console.log('red')
-    if(blueBlock)
-        console.log('blue')
-  var Wall 			 = dist_noBox < 11 &&!blockAhead && !blockInGripper
+  var blueBlock      = color[0] - color[2] < -120
+  var redBlock		 = color[0] - color[2] > 120
+  var blockInGripper = dist_all < 6 && (blueBlock || redBlock)
+  var blockAhead     = dist_all >= 5 && dist_all < 15 && (blueBlock || redBlock)
+  var Wall 			 = dist_noBox < 15
   
   //alert(dist_all + " " + dist_noBox + " " + color)
   //alert(blockInGripper + " " + blueBlock + " " + redBlock + " " + blockAhead)
   
+  
+  
   // Should we remove !WALL ????
-  if((blockAhead || blockInGripper)){
+  if((blockAhead || blockInGripper) && !Wall){
 	  
 	  if(!blockInGripper){
 		  console.log("Block ahead")
-		robot.drive(robot, 0.0005);
+		robot.drive(robot, 0.0005); 
 		
 	  } else if(blueBlock){
 		console.log("Blue block in gripper")
 		robot.rotate(robot, +0.005);
-		robot.drive(robot, 0.0005);
+		robot.drive(robot, 0.0005); 
 		
 	  } else if(redBlock){
 		console.log("Red block in gripper")
-        robot.drive(robot,0.0)
-		robot.rotate(robot, -0.010);
-		//robot.drive(robot, 0.0005);
+        //robot.drive(robot,-0.005)
+		robot.rotate(robot, -0.030);
+		robot.drive(robot, 0.0005);     
 	  }
 	  
   } else if (Wall) {
 	  
 	  if(!blockInGripper){
 		console.log("Near wall, no block")  
-		robot.rotate(robot, +0.010);
+		robot.rotate(robot, +0.2);
 		
 	  } else if(blueBlock){
 		console.log("Near wall, blueBlock")
         //robot.drive(robot, -0.005);
 		robot.rotate(robot, -0.010);
-		robot.drive(robot, 0.0005);
+		robot.drive(robot, 0.0005);  
 		
 	  } else if(redBlock){
 		console.log("Near wall, redBlock") 
 		robot.rotate(robot, +0.005);
-		robot.drive(robot, 0.0005);
+		robot.drive(robot, 0.0005);     
 	  }
   
   } else {
-	//console.log("Default")
+	console.log("Default")
 	robot.rotate(robot, +0.005);
-	robot.drive(robot, 0.0005);
+	robot.drive(robot, 0.0005);  
 	  
   }
 
