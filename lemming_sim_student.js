@@ -44,13 +44,15 @@ RobotInfo = [
      
 	 // define color sensor
 	 {
-	  sense: senseColor, minVal: 0, maxVal: 20, attachAngle: 0.1, attachRadius: 10,
+	  sense: senseColor, minVal: 0, maxVal: 1, attachAngle: 0.1, attachRadius: 10,
       lookAngle: 0.51, id: 'color', color: [0, 150, 0], parent: null, value: [-1, -1, -1]
 	 },
+	 
      {
-     sense: senseColor, minVal: 0, maxVal: 20, attachAngle: 0.1, attachRadius: 10,
+     sense: senseColor, minVal: 0, maxVal: 8, attachAngle: 0.1, attachRadius: 10,
      lookAngle: -0.51, id: 'color2', color: [0, 150, 0], parent: null, value: [-1, -1, -1]
      },
+	 
      // define a gyroscope/angle sensor
      {sense: senseRobotAngle, id: 'gyro', parent: null, value: null, valueStr: ''}
      // TODO: define a color sensor
@@ -65,7 +67,7 @@ simInfo = {
   airDrag: 0.1,  // "air" friction of environment; 0 is vacuum, 0.9 is molasses
   boxFric: 0.005, // friction between boxes during collisions
   boxMass: 0.01,  // mass of boxes
-  boxSize: 20,  // size of the boxes, in pixels
+  boxSize: 15,  // size of the boxes, in pixels
   robotSize: 10, // approximate robot radius, to select by clicking with mouse
   robotMass: 0.4, // robot mass (a.u)
   gravity: 0,  // constant acceleration in Y-direction
@@ -666,75 +668,74 @@ function robotMove(robot) {
  *   – If it carries a blue block it should turn left to leave the block.
  *   – If it carries a red block it should turn right to keep the block.
  */
-
-  const dist_all = getSensorValById(robot, 'dist_all'),
-        dist_noBox = getSensorValById(robot, 'dist_noBox'),
-		color = getSensorValById(robot, 'color'),
-        color2 = getSensorValById(robot,'color2');
+	
+	const dist_all = getSensorValById(robot, 'dist_all'),
+          dist_noBox = getSensorValById(robot, 'dist_noBox'),
+		  color = getSensorValById(robot, 'color');
     
-		
- 
-
-  var blueBlock      = color[0] - color[2] < -120 || color2[0] - color2[2] < -120
-  var redBlock		 = color[0] - color[2] > 120 || color2[0] - color2[2] > 120
-    
-    //prevent interference of both sensors, if the robot detects a red block, the red block gets priority
-    if (redBlock)
-        blueBlock=false
-  var blockInGripper = (blueBlock || redBlock) //&&(dist_all < 13 || dist_all_2 <13)
-  var blockAhead     = (dist_all >= 13 && dist_all < 17) && (blueBlock || redBlock)
-   if(redBlock)
-       console.log('red')
-    if(blueBlock)
-        console.log('blue')
-  var Wall 			 = dist_noBox < 11 &&!blockAhead && !blockInGripper
+	
+	var blueBlock = color[0] - color[2] < -120 
+  	var redBlock  = color[0] - color[2] > 120
+  	//prevent interference of both sensors, if the robot detects a red block, the red block gets priority
+  	if (redBlock)
+		blueBlock=false
+	// Min value for dist_all might need some tuning
+	var blockInGripper = (blueBlock || redBlock) && dist_all < 13
+  	var blockAhead     = dist_all >= 13 && dist_noBox - dist_all > 6
+    // Min value for dist_all might need some tuning
+  	var wallAhead 	   = dist_noBox < 20
+	
+	
+	//Optional message for alert or console log
+	message = "blueBlock=" + blueBlock + "\n" +
+		  	  "redBlock=" + redBlock + "\n" +
+		      "blockInGripper=" + blockInGripper + "\n" +
+		      "blockAhead=" + blockAhead + "\n" +
+		      "wall=" + wallAhead;
+	//alert(message)
+	//console.log(message)
   
-  //alert(dist_all + " " + dist_noBox + " " + color)
-  //alert(blockInGripper + " " + blueBlock + " " + redBlock + " " + blockAhead)
+	speedWander = 0.0005
+	rotationWander = 0.005
+	rotationKeep = 0.01				// turn right to keep
+    rotationLeave  = -rotationKeep  // turn left to leave
   
-  // Should we remove !WALL ????
-  if((blockAhead || blockInGripper)){
+  	if((blockAhead || blockInGripper) && !wallAhead){
 	  
-	  if(!blockInGripper){
-		  console.log("Block ahead")
-		robot.drive(robot, 0.0005);
+		if(!blockInGripper){
+			console.log("Block ahead")
+			robot.drive(robot, speedWander);
 		
-	  } else if(blueBlock){
-		console.log("Blue block in gripper")
-		robot.rotate(robot, +0.005);
-		robot.drive(robot, 0.0005);
+		} else if(blueBlock){
+			console.log("Blue block in gripper")
+			robot.rotate(robot, rotationWander);
+			robot.drive(robot, speedWander);
 		
-	  } else if(redBlock){
-		console.log("Red block in gripper")
-        robot.drive(robot,0.0)
-		robot.rotate(robot, -0.010);
-		//robot.drive(robot, 0.0005);
-	  }
+	  	} else if(redBlock){
+			console.log("Red block in gripper")
+			robot.rotate(robot, rotationLeave);
+    	}
+		
+  	} else if (wallAhead) {
 	  
-  } else if (Wall) {
-	  
-	  if(!blockInGripper){
-		console.log("Near wall, no block")  
-		robot.rotate(robot, +0.010);
+	  	if(!blockInGripper){
+			console.log("Near wall, no block")  
+			robot.rotate(robot, 50 * rotationWander);
 		
-	  } else if(blueBlock){
-		console.log("Near wall, blueBlock")
-        //robot.drive(robot, -0.005);
-		robot.rotate(robot, -0.010);
-		robot.drive(robot, 0.0005);
-		
-	  } else if(redBlock){
-		console.log("Near wall, redBlock") 
-		robot.rotate(robot, +0.005);
-		robot.drive(robot, 0.0005);
-	  }
+	  	} else if(blueBlock){
+			console.log("Near wall, blueBlock")
+			robot.rotate(robot, rotationLeave);
+			
+	  	} else if(redBlock){
+			console.log("Near wall, redBlock") 
+			robot.rotate(robot, rotationKeep);
+		}
   
-  } else {
-	//console.log("Default")
-	robot.rotate(robot, +0.005);
-	robot.drive(robot, 0.0005);
-	  
-  }
+	} else {
+		//console.log("Default")
+		robot.rotate(robot, rotationWander);
+		robot.drive(robot, speedWander);
+	}
 
   // A demonstration of a turn every 200th step (as an example of some condition)
   if (!(simInfo.curSteps % 200)) {
