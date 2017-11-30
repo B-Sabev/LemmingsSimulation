@@ -57,6 +57,7 @@ function robotInit(x, y){
 
 // Description of robot(s), and attached sensor(s) used by InstantiateRobot()
 RobotInfo = [
+      minVal: 0,  // minimum detectable distance, in pixels
   robotInit(50,50),
   //robotInit(100,50),
   //robotInit(50,100)
@@ -690,7 +691,7 @@ function robotMove(robot) {
 	var blockInGripper = (blueBlock || redBlock) && dist_all < 13
   	var blockAhead     = dist_all >= 13 && dist_noBox - dist_all > 6
     // Min value for dist_all might need some tuning
-  	var wallAhead 	   = dist_noBox < 20
+  	var wallAhead 	   = dist_noBox < 25
 	
 	
 	//Optional message for alert or console log
@@ -748,7 +749,7 @@ function robotMove(robot) {
   if (!(simInfo.curSteps % 200)) {
     // Attach new closure to robot.move (the function called every sim step),
     // to prevent entering robotMove() until the requested rotation is done:
-    robot.move = rotateBySetRadians(robot, Math.PI/1.5);
+    robot.move = rotateBySetRadians(robot, Math.PI/5.0);
   }
 
 };
