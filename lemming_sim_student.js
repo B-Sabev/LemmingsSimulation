@@ -113,13 +113,19 @@ function init() {  // called once when loading HTML file
   /* Add a bunch of boxes in a neat grid. */
   function getBox(x, y) {
     // flip coin for red vs blue and add rgb
-    colFlag = Math.round(Math.random());  // random 0,1 variable for box color
-    if (((x == 100 || x == 220 || x ==340) && (y==100 || y == 200 || y == 300)) || ((x==160 || x == 280) && (y==150 || y ==250))){
-      color = [0, 0, 200];
-    }
-    else {
-      color = [200, 0, 0];
-    }
+	x_s = x - 80 // x - startX
+	y_s = y - 80 // y - startY
+	
+	if(x_s % 2 == 0 && y_s % 2 == 0){
+		color = [0, 0, 200];
+	} else if (x_s % 2 == 0 && y_s % 2 != 0){
+		color = [200, 0, 0];
+	} else if ( x_s % 2 != 0 && y_s % 2 == 0) {
+		color = [200, 0, 0];
+	} else {
+		color = [0, 0, 200];
+	}
+	  
     box = Matter.Bodies.rectangle(x, y, simInfo.boxSize, simInfo.boxSize,
                                   {frictionAir: simInfo.airDrag,
                                    friction: simInfo.boxFric,
@@ -129,7 +135,7 @@ function init() {  // called once when loading HTML file
     return box;
   };
 
-  const startX = 100, startY = 100,
+  const startX = 80, startY = 80,
         nBoxX = 7, nBoxY = 7,
         gapX = 40, gapY = 30,
         stack = Matter.Composites.stack(startX, startY,
