@@ -114,7 +114,7 @@ function init() {  // called once when loading HTML file
   function getBox(x, y) {
     // flip coin for red vs blue and add rgb
     colFlag = Math.round(Math.random());  // random 0,1 variable for box color
-    if (colFlag == 1 ){
+    if (((x == 100 || x == 220 || x ==340) && (y==100 || y == 200 || y == 300)) || ((x==160 || x == 280) && (y==150 || y ==250))){
       color = [0, 0, 200];
     }
     else {
