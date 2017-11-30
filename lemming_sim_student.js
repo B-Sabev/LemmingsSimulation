@@ -44,15 +44,10 @@ RobotInfo = [
      
 	 // define color sensor
 	 {
-	  sense: senseColor, minVal: 0, maxVal: 1, attachAngle: 0.1, attachRadius: 10,
-      lookAngle: 0.51, id: 'color', color: [0, 150, 0], parent: null, value: [-1, -1, -1]
+	  sense: senseColor, minVal: 0, maxVal: 15, attachAngle: -0.9, attachRadius: 10,
+      lookAngle: 0.9, id: 'color', color: [0, 150, 0], parent: null, value: [-1, -1, -1]
 	 },
-	 
-     {
-     sense: senseColor, minVal: 0, maxVal: 8, attachAngle: 0.1, attachRadius: 10,
-     lookAngle: -0.51, id: 'color2', color: [0, 150, 0], parent: null, value: [-1, -1, -1]
-     },
-	 
+     
      // define a gyroscope/angle sensor
      {sense: senseRobotAngle, id: 'gyro', parent: null, value: null, valueStr: ''}
      // TODO: define a color sensor
@@ -135,7 +130,7 @@ function init() {  // called once when loading HTML file
   };
 
   const startX = 100, startY = 100,
-        nBoxX = 5, nBoxY = 5,
+        nBoxX = 7, nBoxY = 7,
         gapX = 40, gapY = 30,
         stack = Matter.Composites.stack(startX, startY,
                                         nBoxX, nBoxY,
