@@ -17,43 +17,49 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+function robotInit(x, y){
+ return {body: null,  // for MatterJS body, added by InstantiateRobot()
+		   color: [255, 255, 255],  // color of the robot shape
+		   init: {x: x, y: y, angle: 0},  // initial position and orientation
+		   sensors: [  // define an array of sensors on the robot
+			 // define one sensor
+			 {sense: senseDistance,  // function handle, determines type of sensor
+			  minVal: 0,  // minimum detectable distance, in pixels
+			  maxVal: 60,  // maximum detectable distance, in pixels
+			  attachAngle: 0.1,//Math.PI/30,  // sensor's angle on robot body
+			  attachRadius: 10, // sensor's distance from robot body center
+			  lookAngle: 0,  // direction the sensor is looking (relative to center-out)
+			  id: 'dist_all',  // a unique, arbitrary ID of the sensor, for printing/debugging
+			  color: [0, 0, 0, 50],  // sensor color [in RGBA], to distinguish them
+			  parent: null,  // robot object the sensor is attached to, added by InstantiateRobot
+			  value: null,  // sensor value, i.e. distance in pixels; updated by sense() function
+			  valueStr: ''  // sensor value for printing on screen/writing to HTML
+			 },
+			 // define distance sensor that doesn't see boxes (e.g. because it's "elevated")
+			 {sense: senseDistance_noBox, minVal: 0, maxVal: 70, attachAngle: 0.1,//-Math.PI/30,
+			  attachRadius: 10, lookAngle:  0, id: 'dist_noBox', color: [100, 100, 100, 50],
+			  parent: null, value: null, valueStr: ''
+			 },
+
+			 // define color sensor
+			 {
+			  sense: senseColor, minVal: 0, maxVal: 15, attachAngle: -0.9, attachRadius: 10,
+			  lookAngle: 0.9, id: 'color', color: [0, 150, 0], parent: null, value: [-1, -1, -1]
+			 },
+
+			 // define a gyroscope/angle sensor
+			 {sense: senseRobotAngle, id: 'gyro', parent: null, value: null, valueStr: ''}
+			 // TODO: define a color sensor
+			 // {sense: senseColor, ... },
+		   ]
+		  }
+};
+
 // Description of robot(s), and attached sensor(s) used by InstantiateRobot()
 RobotInfo = [
-  {body: null,  // for MatterJS body, added by InstantiateRobot()
-   color: [255, 255, 255],  // color of the robot shape
-   init: {x: 50, y: 50, angle: 0},  // initial position and orientation
-   sensors: [  // define an array of sensors on the robot
-     // define one sensor
-     {sense: senseDistance,  // function handle, determines type of sensor
-      minVal: 0,  // minimum detectable distance, in pixels
-      maxVal: 60,  // maximum detectable distance, in pixels
-      attachAngle: 0.1,//Math.PI/30,  // sensor's angle on robot body
-      attachRadius: 10, // sensor's distance from robot body center
-      lookAngle: 0,  // direction the sensor is looking (relative to center-out)
-      id: 'dist_all',  // a unique, arbitrary ID of the sensor, for printing/debugging
-      color: [0, 0, 0, 50],  // sensor color [in RGBA], to distinguish them
-      parent: null,  // robot object the sensor is attached to, added by InstantiateRobot
-      value: null,  // sensor value, i.e. distance in pixels; updated by sense() function
-      valueStr: ''  // sensor value for printing on screen/writing to HTML
-     },
-     // define distance sensor that doesn't see boxes (e.g. because it's "elevated")
-     {sense: senseDistance_noBox, minVal: 0, maxVal: 70, attachAngle: 0.1,//-Math.PI/30,
-      attachRadius: 10, lookAngle:  0, id: 'dist_noBox', color: [100, 100, 100, 50],
-      parent: null, value: null, valueStr: ''
-     },
-     
-	 // define color sensor
-	 {
-	  sense: senseColor, minVal: 0, maxVal: 15, attachAngle: -0.9, attachRadius: 10,
-      lookAngle: 0.9, id: 'color', color: [0, 150, 0], parent: null, value: [-1, -1, -1]
-	 },
-     
-     // define a gyroscope/angle sensor
-     {sense: senseRobotAngle, id: 'gyro', parent: null, value: null, valueStr: ''}
-     // TODO: define a color sensor
-     // {sense: senseColor, ... },
-   ]
-  }
+  robotInit(50,50),
+  //robotInit(100,50),
+  //robotInit(50,100)
 ];
 
 // Simulation settings; please change anything that you think makes sense.
@@ -696,8 +702,8 @@ function robotMove(robot) {
 	//alert(message)
 	//console.log(message)
   
-	speedWander = 0.0005
-	rotationWander = 0.005
+	speedWander = 0.0004
+	rotationWander = 0.001
 	rotationKeep = 0.01				// turn right to keep
     rotationLeave  = -rotationKeep  // turn left to leave
   
