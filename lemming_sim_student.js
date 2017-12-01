@@ -43,7 +43,7 @@ function robotInit(x, y){
 
 			 // define color sensor
 			 {
-			  sense: senseColor, minVal: 0, maxVal: 10, attachAngle: -0.3, attachRadius: 25,
+			  sense: senseColor, minVal: 0, maxVal: 10, attachAngle: -0.3, attachRadius: 28,
 			  lookAngle: 1.6, id: 'color', color: [0, 150, 0], parent: null, value: [-1, -1, -1]
 			 },
 
@@ -691,7 +691,7 @@ function robotMove(robot) {
 	var blockInGripper = (blueBlock || redBlock) && dist_all < 13
   	var blockAhead     = dist_all >= 13 && dist_noBox - dist_all > 6
     // Min value for dist_all might need some tuning
-  	var wallAhead 	   = dist_noBox < 25
+  	var wallAhead 	   = dist_noBox < 27
 	
 	
 	//Optional message for alert or console log
@@ -704,8 +704,8 @@ function robotMove(robot) {
 	//console.log(message)
   
 	speedWander = 0.0004
-	rotationWander = 0.001
-	rotationKeep = 0.01				// turn right to keep
+	rotationWander = 0.0007
+	rotationKeep = 0.03				// turn right to keep
     rotationLeave  = -rotationKeep  // turn left to leave
   
   	if((blockAhead || blockInGripper) && !wallAhead){

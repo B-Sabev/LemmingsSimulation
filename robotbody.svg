@@ -24,7 +24,7 @@
          rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></ns:Work><cc:Work
          rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title /></cc:Work></rdf:RDF></metadata><defs
      id="defs15" /><sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -39,7 +39,7 @@
      id="namedview13"
      showgrid="false"
      inkscape:zoom="1.5742187"
-     inkscape:cx="246.77309"
+     inkscape:cx="135.60683"
      inkscape:cy="101.90108"
      inkscape:window-x="0"
      inkscape:window-y="22"
@@ -58,8 +58,8 @@
        orientation="0,1"
        id="guide867"
        inkscape:locked="false" /></sodipodi:namedview><path
-     style="stroke-width:0.99999988;fill:#000000"
-     d="M 62.888672 85.052734 L 62.888672 225.75 L 193.17578 233.93945 L 218.1543 223.04297 C 217.38974 219.35934 214.45044 216.35869 210.50391 215.70312 L 186.07227 211.64453 C 185.55025 203.11718 179.85789 192.47399 180.00391 190.68164 C 182.11053 164.82382 181.50485 134.05392 179.26562 115.44336 L 281.55859 131.40039 C 285.63355 132.03606 289.54625 130.19859 291.76562 127.00586 L 270.28906 109.77734 C 269.57432 109.70938 268.86036 109.63205 268.14648 109.54688 L 62.888672 85.052734 z "
+     style="fill:#000000;stroke-width:0.99978149"
+     d="M 86.421875 87.861328 L 62.888672 157.56641 L 62.888672 160.16797 L 85.509766 227.17188 L 193.11914 233.93945 L 218.08594 223.04297 C 217.32171 219.35934 214.38425 216.3587 210.43945 215.70312 L 186.01758 211.64453 C 185.49579 203.11718 179.80717 192.47399 179.95312 190.68164 C 182.05883 164.82382 181.45309 134.05392 179.21484 115.44336 L 281.46289 131.40039 C 284.74628 131.9128 287.9087 130.79971 290.17969 128.68359 L 228.54688 104.83008 L 86.421875 87.861328 z "
      id="robotbody" /><circle
      style="opacity:1;fill:#000080;fill-opacity:1;stroke:none;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:25.29999924;stroke-dasharray:none"
      id="ellipse892"
