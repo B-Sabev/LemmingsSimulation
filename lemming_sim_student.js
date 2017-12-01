@@ -43,8 +43,8 @@ function robotInit(x, y){
 
 			 // define color sensor
 			 {
-			  sense: senseColor, minVal: 0, maxVal: 15, attachAngle: -0.9, attachRadius: 10,
-			  lookAngle: 0.9, id: 'color', color: [0, 150, 0], parent: null, value: [-1, -1, -1]
+			  sense: senseColor, minVal: 0, maxVal: 10, attachAngle: -0.3, attachRadius: 25,
+			  lookAngle: 1.6, id: 'color', color: [0, 150, 0], parent: null, value: [-1, -1, -1]
 			 },
 
 			 // define a gyroscope/angle sensor
@@ -57,7 +57,7 @@ function robotInit(x, y){
 
 // Description of robot(s), and attached sensor(s) used by InstantiateRobot()
 RobotInfo = [
-      minVal: 0,  // minimum detectable distance, in pixels
+       // minimum detectable distance, in pixels
   robotInit(50,50),
   //robotInit(100,50),
   //robotInit(50,100)
