@@ -271,7 +271,7 @@ function senseColor() {
 
   // Check bodies hit with the max array length
   var rayLength = this.maxVal;
-  var colorDetected = [68, 68, 68]
+  var colorDetected = [-1, -1, -1]
   bodies = sensorRay(bodies, rayLength);
   // if some collided, search for maximal ray length without collisions
   if (bodies.length > 0) {
@@ -692,6 +692,9 @@ function robotMove(robot) {
   	var blockAhead     = dist_all >= 13 && dist_noBox - dist_all > 15
     // Min value for dist_all might need some tuning
   	var wallAhead 	   = dist_noBox < 27
+	var robotAhead = color[1]
+	
+	console.log(robotAhead)
 	
 	
 	//Optional message for alert or console log
@@ -749,7 +752,7 @@ function robotMove(robot) {
   if (!(simInfo.curSteps % 200)) {
     // Attach new closure to robot.move (the function called every sim step),
     // to prevent entering robotMove() until the requested rotation is done:
-    robot.move = rotateBySetRadians(robot, Math.PI/6.0 + Math.random() * 10);
+    robot.move = rotateBySetRadians(robot, Math.PI/4 + Math.random() * 4);
   }
 
 };
