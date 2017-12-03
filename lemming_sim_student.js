@@ -749,7 +749,7 @@ function robotMove(robot) {
   if (!(simInfo.curSteps % 200)) {
     // Attach new closure to robot.move (the function called every sim step),
     // to prevent entering robotMove() until the requested rotation is done:
-    robot.move = rotateBySetRadians(robot, Math.PI/3 + Math.random() * 10);
+    robot.move = rotateBySetRadians(robot, Math.PI/6.0 + Math.random() * 10);
   }
 
 };
