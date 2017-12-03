@@ -59,8 +59,8 @@ function robotInit(x, y){
 RobotInfo = [
        // minimum detectable distance, in pixels
   robotInit(50,50),
-  //robotInit(100,50),
-  //robotInit(50,100)
+  robotInit(400,50),
+  //robotInit(50,400)
 ];
 
 // Simulation settings; please change anything that you think makes sense.
@@ -169,7 +169,7 @@ function init() {  // called once when loading HTML file
   Matter.Events.on(simInfo.engine, 'tick', simStep);
 
   /* Create robot(s). */
-  setRobotNumber(1);  // requires defined simInfo.world
+  setRobotNumber(2);  // requires defined simInfo.world
   loadBay(robots[0]);
 
 };
@@ -314,7 +314,7 @@ function senseColor() {
       return sigma * Math.sqrt(-2 * Math.log(x0)) * Math.cos(2 * Math.PI * x1);
     };
 	for(i = 0; i < colorDetected.length; i++){
-		colorDetected[i] = Math.floor(colorDetected[i] + gaussNoise(20));
+		colorDetected[i] = Math.floor(colorDetected[i] + gaussNoise(30));
 	}
     
   }
@@ -689,7 +689,7 @@ function robotMove(robot) {
 		blueBlock=false
 	// Min value for dist_all might need some tuning
 	var blockInGripper = (blueBlock || redBlock) && dist_all < 13
-  	var blockAhead     = dist_all >= 13 && dist_noBox - dist_all > 6
+  	var blockAhead     = dist_all >= 13 && dist_noBox - dist_all > 15
     // Min value for dist_all might need some tuning
   	var wallAhead 	   = dist_noBox < 27
 	
@@ -749,7 +749,7 @@ function robotMove(robot) {
   if (!(simInfo.curSteps % 200)) {
     // Attach new closure to robot.move (the function called every sim step),
     // to prevent entering robotMove() until the requested rotation is done:
-    robot.move = rotateBySetRadians(robot, Math.PI/5.0);
+    robot.move = rotateBySetRadians(robot, Math.PI/3 + Math.random() * 10);
   }
 
 };
